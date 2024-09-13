@@ -6,7 +6,7 @@ public class ToDoList {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int choice;
+        int choice = 0; // Initialize choice to avoid scope issues
 
         do {
             // Display menu
@@ -17,6 +17,12 @@ public class ToDoList {
             System.out.println("\n4. Edit Task Priority");
             System.out.println("\n5. Exit");
             System.out.print("\nEnter your choice: \n");
+
+            while (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.next(); // Clear the invalid input
+                System.out.print("\nEnter your choice: \n");
+            }
             choice = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
@@ -66,6 +72,11 @@ public class ToDoList {
         int priority = -1;
         while (priority < 1 || priority > 10) {
             System.out.print("Enter the priority (1-10, with 1 being highest priority): \n");
+            while (!scanner.hasNextInt()) {
+                System.out.println("Invalid input. Please enter a number between 1 and 10.");
+                scanner.next(); // Clear the invalid input
+                System.out.print("Enter the priority (1-10, with 1 being highest priority): \n");
+            }
             priority = scanner.nextInt();
             scanner.nextLine(); // Consume newline
             if (priority < 1 || priority > 10) {
@@ -84,15 +95,23 @@ public class ToDoList {
         } else {
             viewTasks();
             System.out.print("Enter the task number to remove: \n");
-            int taskNumber = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
 
-            if (taskNumber > 0 && taskNumber <= tasks.size()) {
-                Task removedTask = tasks.remove(taskNumber - 1);
-                System.out.println("Task removed: " + removedTask.description);
-            } else {
-                System.out.println("Invalid task number! Please try again.");
+            int taskNumber = -1;
+            while (taskNumber < 1 || taskNumber > tasks.size()) {
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a valid task number.");
+                    scanner.next(); // Clear the invalid input
+                    System.out.print("Enter the task number to remove: \n");
+                }
+                taskNumber = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (taskNumber < 1 || taskNumber > tasks.size()) {
+                    System.out.println("Invalid task number! Please try again.");
+                }
             }
+
+            Task removedTask = tasks.remove(taskNumber - 1);
+            System.out.println("Task removed: " + removedTask.description);
         }
     }
 
@@ -103,26 +122,69 @@ public class ToDoList {
         } else {
             viewTasks();
             System.out.print("Enter the task number to edit the priority: \n");
-            int taskNumber = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
 
-            if (taskNumber > 0 && taskNumber <= tasks.size()) {
-                Task task = tasks.get(taskNumber - 1);
-
-                int newPriority = -1;
-                while (newPriority < 1 || newPriority > 10) {
-                    System.out.print("Enter the new priority (1-10, with 1 being highest priority): \n");
-                    newPriority = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
-                    if (newPriority < 1 || newPriority > 10) {
-                        System.out.println("Invalid priority! Please enter a value between 1 and 10.");
-                    }
+            int taskNumber = -1;
+            while (taskNumber < 1 || taskNumber > tasks.size()) {
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a valid task number.");
+                    scanner.next(); // Clear the invalid input
+                    System.out.print("Enter the task number to edit the priority: \n");
                 }
+                taskNumber = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (taskNumber < 1 || taskNumber > tasks.size()) {
+                    System.out.println("Invalid task number! Please try again.");
+                }
+            }
 
-                task.priority = newPriority;
-                System.out.println("Task updated: " + task.description + " with new priority " + newPriority);
+            Task task = tasks.get(taskNumber - 1);
+
+            int newPriority = -1;
+            while (newPriority < 1 || newPriority > 10) {
+                System.out.print("Enter the new priority (1-10, with 1 being highest priority): \n");
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a number between 1 and 10.");
+                    scanner.next(); // Clear the invalid input
+                    System.out.print("Enter the new priority (1-10, with 1 being highest priority): \n");
+                }
+                newPriority = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (newPriority < 1 || newPriority > 10) {
+                    System.out.println("Invalid priority! Please enter a value between 1 and 10.");
+                }
+            }
+
+            task.priority = newPriority;
+            System.out.println("Task updated: " + task.description + " with new priority " + newPriority);
+        }
+    }
+
+    // Inner class to represent a task
+    static class Task {
+        // Fields
+        private String description;
+        private int priority;
+
+        // Constructor
+        public Task(String description, int priority) {
+            this.description = description;
+            this.priority = priority;
+        }
+
+        // Override toString method for formatted task output
+        @Override
+        public String toString() {
+            return "[" + getPriorityLevel() + " Priority] " + description + " (Priority: " + priority + ")";
+        }
+
+        // Determine the priority level as a string
+        public String getPriorityLevel() {
+            if (priority >= 1 && priority <= 4) {
+                return "High";
+            } else if (priority >= 5 && priority <= 6) {
+                return "Medium";
             } else {
-                System.out.println("Invalid task number! Please try again.");
+                return "Low";
             }
         }
     }
